@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Writing Assistant</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background: #f0f4f8;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: start;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      padding: 30px;
+      width: 100%;
+      max-width: 600px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    input {
+      width: 80%;
+      padding: 12px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #388e3c;
+    }
+
+    .output {
+      margin-top: 25px;
+      padding: 20px;
+      background: #f9f9f9;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      text-align: left;
+      white-space: pre-wrap;
+    }
+
+    .loader {
+      display: none;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1> AI Writing Assistant</h1>
+    <input id="topic" type="text" placeholder="Enter a topic..." />
+    <br>
+    <button onclick="generate()">Generate</button>
+    <div class="loader" id="loader">Generating...</div>
+    <div class="output" id="output"></div>
+  </div>
+
+  <script>
+    async function generate() {
+      const topic = document.getElementById("topic").value.trim();
+      const outputDiv = document.getElementById("output");
+      const loader = document.getElementById("loader");
+
+      if (!topic) {
+        alert("Please enter a topic.");
+        return;
+      }
+
+      outputDiv.innerText = "";
+      loader.style.display = "block";
+
+      try {
+        const response = await fetch("http://localhost:5000/generate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ topic })
+        });
+
+        const data = await response.json();
+        loader.style.display = "none";
+
+        if (data.output) {
+          outputDiv.innerText = data.output;
+        } else {
+          outputDiv.innerText = "Error: " + data.error;
+        }
+
+      } catch (error) {
+        loader.style.display = "none";
+        outputDiv.innerText = "Something went wrong.";
+      }
+    }
+  </script>
+</body>
+</html>
